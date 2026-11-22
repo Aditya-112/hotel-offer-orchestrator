@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="330" viewBox="0 0 1200 330" role="img" aria-labelledby="title desc">
+  <title id="title">Hotel Offer Orchestrator</title>
+  <desc id="desc">Concurrent supplier offers converge into one cheapest hotel offer, coordinated by Temporal and indexed in Redis.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0b1225"/><stop offset="1" stop-color="#172842"/></linearGradient>
+    <linearGradient id="accent" x1="0" x2="1"><stop stop-color="#61caff"/><stop offset="1" stop-color="#6af0bf"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M 32 0 L 0 0 0 32" fill="none" stroke="#6b91b5" stroke-opacity=".08"/></pattern>
+  </defs>
+  <rect width="1200" height="330" rx="22" fill="url(#background)"/>
+  <rect width="1200" height="330" rx="22" fill="url(#grid)"/>
+  <rect x="44" y="42" width="5" height="24" rx="2" fill="url(#accent)"/>
+  <text x="62" y="60" fill="#87b4d6" font-family="Arial, Helvetica, sans-serif" font-size="14" letter-spacing="3">DURABLE HOTEL OFFER AGGREGATION</text>
+  <g fill="#f5f9ff" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="52" letter-spacing="-1.5"><text x="44" y="126">Hotel Offer</text><text x="44" y="183">Orchestrator</text></g>
+  <text x="46" y="222" fill="#b3c7dc" font-family="Arial, Helvetica, sans-serif" font-size="18">Parallel suppliers. Deterministic winners.</text>
+  <g font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#cde4f7">
+    <rect x="44" y="254" width="105" height="31" rx="15" fill="#20334e"/><text x="64" y="275">Node.js 24</text>
+    <rect x="159" y="254" width="105" height="31" rx="15" fill="#20334e"/><text x="184" y="275">Temporal</text>
+    <rect x="274" y="254" width="91" height="31" rx="15" fill="#20334e"/><text x="301" y="275">Redis</text>
+    <rect x="375" y="254" width="102" height="31" rx="15" fill="#20334e"/><text x="399" y="275">Docker</text>
+  </g>
+  <g stroke="#5ba8d2" stroke-width="2" fill="none"><path d="M808 102 H840 Q856 102 856 120 V165 H888"/><path d="M808 229 H840 Q856 229 856 211 V165"/></g>
+  <circle cx="856" cy="165" r="6" fill="#63d9cc"/>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="626" y="59" width="182" height="86" rx="12" fill="#14243b" stroke="#365474"/>
+    <text x="647" y="85" fill="#a7c1db" font-size="13">SUPPLIER A</text><text x="647" y="120" fill="#edf5ff" font-size="28" font-weight="700">6000</text><text x="734" y="120" fill="#8eaac6" font-size="13">Holtin</text>
+    <rect x="626" y="186" width="182" height="86" rx="12" fill="#14243b" stroke="#365474"/>
+    <text x="647" y="212" fill="#a7c1db" font-size="13">SUPPLIER B</text><text x="647" y="247" fill="#6af0bf" font-size="28" font-weight="700">5340</text><text x="734" y="247" fill="#8eaac6" font-size="13">Holtin</text>
+    <rect x="889" y="101" width="267" height="129" rx="15" fill="#123437" stroke="#57cbb1"/>
+    <text x="910" y="129" fill="#92e7d2" font-size="12" letter-spacing="2">CHEAPEST SELECTED OFFER</text>
+    <text x="910" y="165" fill="#effff9" font-size="26" font-weight="700">Holtin</text><text x="1057" y="165" fill="#6af0bf" font-size="28" font-weight="700">5340</text>
+    <text x="910" y="202" fill="#a7d6cd" font-size="14">Supplier B</text><text x="1013" y="202" fill="#a7d6cd" font-size="14">Commission 20%</text>
+    <text x="890" y="264" fill="#92b2ce" font-size="13">One winner per normalized hotel name</text>
+  </g>
+</svg>
