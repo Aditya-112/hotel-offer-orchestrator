@@ -170,7 +170,7 @@ Import `postman/hotel-offer-orchestrator.postman_collection.json` into Postman a
 
 `test:process` builds the application, starts its compiled API and worker as separate Node processes against real ephemeral Redis and Temporal, and runs all collection assertions. It also checks missing-worker responses, dependency health, cached availability while the worker is stopped, and graceful SIGTERM. It needs the same local binaries as integration tests.
 
-GitHub Actions runs checks, real integration tests, builds and starts Compose, then runs the collection. Its execution still needs to be observed after pushing. Actual local validation results and the requirement audit are recorded in `docs/verification.md` and `docs/requirements-audit.md`.
+GitHub Actions runs checks, real integration tests, builds and starts Compose, then runs the collection. The [observed verification run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45038411486) passed all checks, including Docker readiness and collection assertions. Local and hosted validation results and the requirement audit are recorded in `docs/verification.md` and `docs/requirements-audit.md`.
 
 ## Deployment and troubleshooting
 

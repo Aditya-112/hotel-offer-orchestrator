@@ -1,6 +1,6 @@
-# Local verification record
+# Verification record
 
-Executed on 22 November 2026. Results below describe actual local runs, not assumed container behavior.
+Executed on 22 November 2026. Results below distinguish local runs from the observed Docker-enabled GitHub Actions run.
 
 ## Environment
 
@@ -32,7 +32,13 @@ Executed on 22 November 2026. Results below describe actual local runs, not assu
 | Compose `config --quiet` | Passed using official standalone Compose CLI |
 | Container tags | Upstream Temporal 1.10.1 and Redis 7.4.7-alpine confirmed available |
 | Compose build attempt | Blocked: Docker engine socket `/var/run/docker.sock` does not exist |
-| Container startup | Not executed; Docker engine is unavailable |
+| Local container startup | Not executed; Docker engine is unavailable on the desktop |
+| Hosted Docker image builds | Passed in GitHub Actions |
+| Hosted complete Compose startup | Passed; API, worker, Redis and Temporal reached healthy status |
+| Hosted Postman collection against Docker stack | All 15 requests and 33 assertions passed |
+| Hosted verification workflow | Passed for code commit `505339906802cac532dd7581696b26a4c3258660` |
+
+The [successful GitHub Actions run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45038411486) reran static checks, all 77 unit/integration tests, Compose validation, image builds, readiness-aware stack startup and the live collection. The initial CI run built the images but encountered a host port conflict with the runner's installed Redis service. CI now maps Redis to host port 16379, while all containers continue using `redis:6379`.
 
 Local reproduction with the ignored test binary:
 
@@ -58,9 +64,9 @@ The compiled-process smoke starts `dist/server.js` and `dist/temporal/worker.js`
 
 Application process logs are checked for uncaught startup errors and unhandled rejections. The SDK emitted an upstream `fs.F_OK` deprecation warning. One ephemeral Temporal startup emitted transient `shard status unknown` messages before readiness; its subsequent workflow and integration checks passed. These are not reported as application test failures or hidden as successful container validation.
 
-## Remaining verification
+## Remaining verification and limits
 
-- Docker image builds, persistence-volume ownership at runtime, container health checks and complete Compose startup need a Docker-enabled environment. Configuration validation and native process tests do not establish that those container checks passed.
+- Docker image builds, initialized volume ownership, container health checks and complete Compose startup were verified on the Linux GitHub runner. Desktop Docker execution and native ARM64 container execution were not performed; the desktop has no Docker engine.
 - The assessment PDF was not supplied. The implementation and audit cover the detailed pasted brief; exact PDF-only requirements remain unknown.
 - The Postman collection was schema-validated and its own assertions were executed against the live API through the included adapter. No interactive Postman GUI import was claimed.
-- GitHub Actions is configured to build and start Compose, but its remote result must be observed after publication.
+- The project was pushed to [Aditya-112/hotel-offer-orchestrator](https://github.com/Aditya-112/hotel-offer-orchestrator), and the linked code verification run completed successfully. Subsequent documentation-only updates do not change the tested application.

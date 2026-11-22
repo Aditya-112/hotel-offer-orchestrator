@@ -45,17 +45,17 @@ This audit maps the detailed pasted brief to the implementation. The referenced 
 | Graceful shutdown | `src/server.ts`, `src/temporal/worker.ts` | Compiled API and worker exit with status 0 after SIGTERM |
 | Startup configuration validation | `src/config/env.ts` | Invalid ports, protocols, timeouts and TTL relationships tested |
 | No comments, `any` types, suppressions or console.log application logging | `src/`, `tests/`, `scripts/` | Strict lint/type checking and source review |
-| Multi-stage nonroot application image | `Dockerfile` | Source review; Docker engine unavailable for build execution |
-| Compose with API, worker, Redis, Temporal and persistence | `docker-compose.yml`, `docker/temporal.Dockerfile` | Official Compose CLI accepts configuration; upstream image tags verified |
-| Correct service DNS and readiness checks | `docker-compose.yml`, `scripts/healthcheck.mjs` | Configuration review and equivalent compiled-process readiness tests |
-| Writable nonroot Temporal volume | `docker/temporal.Dockerfile` | Upstream image user inspected; data directory ownership created at build time |
-| Complete Docker startup with no manual initialization | `docker-compose.yml` | Implemented; actual Docker execution remains unverified without engine |
+| Multi-stage nonroot application image | `Dockerfile` | Image builds and container startup pass in GitHub Actions |
+| Compose with API, worker, Redis, Temporal and persistence | `docker-compose.yml`, `docker/temporal.Dockerfile` | Compose validation, image builds, volume initialization and healthy startup pass in CI |
+| Correct service DNS and readiness checks | `docker-compose.yml`, `scripts/healthcheck.mjs` | All four containers become healthy and the collection passes through the Docker stack |
+| Writable nonroot Temporal volume | `docker/temporal.Dockerfile` | Temporal initializes its persisted database and reaches healthy status in CI |
+| Complete Docker startup with no manual initialization | `docker-compose.yml` | `docker compose up --build --wait --wait-timeout 180` passes on the Linux CI runner |
 | Environment example and ignored secrets | `.env.example`, `.gitignore`, `.dockerignore` | Submission file inspection |
 | Automated unit and real integration tests | `tests/unit/`, `tests/integration/` | 53 unit/API tests and 24 integration tests pass |
 | Separate compiled-process end-to-end check | `scripts/smoke.mjs` | API → worker → suppliers → Redis → response and shutdown pass |
 | Postman deliverable | `postman/hotel-offer-orchestrator.postman_collection.json` | Official v2.1 schema; 15 requests and 33 live assertions pass |
 | README setup, API, failure, cache, deployment, troubleshooting | `README.md` | Reviewed against implemented behavior |
-| CI verification including Docker | `.github/workflows/ci.yml` | Workflow defined; remote run must be observed after push |
+| CI verification including Docker | `.github/workflows/ci.yml` | [Successful observed run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45038411486) |
 | Exact PDF compliance and submission conditions | PDF not supplied | Pending receipt of source PDF |
 
 ## Submission checklist
@@ -66,6 +66,6 @@ This audit maps the detailed pasted brief to the implementation. The referenced 
 - [x] Redis server-side range filtering is confirmed by Redis command evidence.
 - [x] Temporal concurrency, retries, timeouts and failure policies are exercised.
 - [x] Generated dependencies, build output, local tools and environment secrets are excluded from Git.
-- [ ] Run Docker image builds and the complete Compose stack on a Docker-enabled machine or CI.
+- [x] Run Docker image builds and the complete Compose stack on a Docker-enabled machine or CI.
 - [ ] Obtain and audit the assessment PDF.
-- [ ] Confirm the remote push and observe the GitHub Actions result.
+- [x] Confirm the remote push and observe the GitHub Actions result.
