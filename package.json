@@ -1,0 +1,51 @@
+{
+  "name": "hotel-offer-orchestrator",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Concurrent hotel offer aggregation with Temporal and Redis-native price filtering",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "scripts": {
+    "dev": "tsx watch src/server.ts",
+    "dev:worker": "tsx watch src/temporal/worker.ts",
+    "build": "tsc -p tsconfig.build.json",
+    "start": "node dist/server.js",
+    "start:worker": "node dist/temporal/worker.js",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
+    "test:all": "vitest run",
+    "test:process": "npm run build && node scripts/smoke.mjs",
+    "postman:validate": "node scripts/validate-postman.mjs",
+    "postman:test": "node scripts/run-postman.mjs",
+    "check": "npm run typecheck && npm run lint && npm test && npm run build && npm run postman:validate"
+  },
+  "dependencies": {
+    "@temporalio/activity": "1.26.0",
+    "@temporalio/client": "1.26.0",
+    "@temporalio/common": "1.26.0",
+    "@temporalio/worker": "1.26.0",
+    "@temporalio/workflow": "1.26.0",
+    "express": "5.3.0",
+    "pino": "10.4.0",
+    "redis": "6.3.1",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "9.39.5",
+    "@temporalio/testing": "1.26.0",
+    "@types/express": "5.0.6",
+    "@types/node": "24.19.2",
+    "@types/supertest": "7.2.1",
+    "ajv-draft-04": "1.0.0",
+    "chai": "6.3.0",
+    "eslint": "9.39.5",
+    "supertest": "7.3.2",
+    "tsx": "4.23.15",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.73.0",
+    "vitest": "4.1.12"
+  }
+}

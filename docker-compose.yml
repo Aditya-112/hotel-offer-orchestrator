@@ -1,0 +1,103 @@
+name: hotel-offer-orchestrator
+
+x-app-environment: &app-environment
+  NODE_ENV: production
+  PORT: 3000
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+  REDIS_URL: redis://redis:6379
+  TEMPORAL_ADDRESS: temporal:7233
+  TEMPORAL_NAMESPACE: default
+  TEMPORAL_TASK_QUEUE: ${TEMPORAL_TASK_QUEUE:-hotel-offers}
+  SUPPLIER_A_URL: http://api:3000/supplierA/hotels
+  SUPPLIER_B_URL: http://api:3000/supplierB/hotels
+  WORKER_HEALTH_URL: http://worker:3002/ready
+  WORKER_HEALTH_PORT: 3002
+  CACHE_TTL_SECONDS: ${CACHE_TTL_SECONDS:-60}
+  PARTIAL_CACHE_TTL_SECONDS: ${PARTIAL_CACHE_TTL_SECONDS:-10}
+  SUPPLIER_A_MODE: ${SUPPLIER_A_MODE:-healthy}
+  SUPPLIER_B_MODE: ${SUPPLIER_B_MODE:-healthy}
+  SUPPLIER_HTTP_TIMEOUT_MS: ${SUPPLIER_HTTP_TIMEOUT_MS:-1500}
+  ACTIVITY_START_TO_CLOSE_MS: ${ACTIVITY_START_TO_CLOSE_MS:-3000}
+  ACTIVITY_SCHEDULE_TO_CLOSE_MS: ${ACTIVITY_SCHEDULE_TO_CLOSE_MS:-12000}
+  ACTIVITY_MAX_ATTEMPTS: ${ACTIVITY_MAX_ATTEMPTS:-3}
+  ACTIVITY_RETRY_INITIAL_MS: ${ACTIVITY_RETRY_INITIAL_MS:-250}
+  ACTIVITY_RETRY_MAX_MS: ${ACTIVITY_RETRY_MAX_MS:-1000}
+  WORKFLOW_TIMEOUT_MS: ${WORKFLOW_TIMEOUT_MS:-20000}
+  DEPENDENCY_TIMEOUT_MS: ${DEPENDENCY_TIMEOUT_MS:-1500}
+
+services:
+  redis:
+    image: redis:7.4.7-alpine
+    command: [redis-server, --appendonly, 'yes']
+    volumes:
+      - redis-data:/data
+    ports:
+      - '127.0.0.1:${REDIS_PORT:-6379}:6379'
+    healthcheck:
+      test: [CMD, redis-cli, ping]
+      interval: 3s
+      timeout: 2s
+      retries: 20
+    restart: unless-stopped
+
+  temporal:
+    image: hotel-offer-orchestrator-temporal:1.10.1
+    build:
+      context: .
+      dockerfile: docker/temporal.Dockerfile
+    command: [server, start-dev, --ip, 0.0.0.0, --ui-ip, 0.0.0.0, --db-filename, /data/temporal.db, --namespace, default]
+    volumes:
+      - temporal-data:/data
+    ports:
+      - '127.0.0.1:${TEMPORAL_PORT:-7233}:7233'
+      - '127.0.0.1:${TEMPORAL_UI_PORT:-8233}:8233'
+    healthcheck:
+      test: [CMD, temporal, operator, cluster, health, --address, 127.0.0.1:7233]
+      interval: 3s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    restart: unless-stopped
+
+  api:
+    build: .
+    environment: *app-environment
+    ports:
+      - '127.0.0.1:${API_PORT:-3000}:3000'
+    depends_on:
+      redis:
+        condition: service_healthy
+      temporal:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, scripts/healthcheck.mjs, api]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+      start_period: 20s
+    stop_grace_period: 30s
+    init: true
+    restart: unless-stopped
+
+  worker:
+    build: .
+    command: [node, dist/temporal/worker.js]
+    environment: *app-environment
+    depends_on:
+      api:
+        condition: service_started
+      temporal:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, node, scripts/healthcheck.mjs, worker]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    stop_grace_period: 20s
+    init: true
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+  temporal-data:

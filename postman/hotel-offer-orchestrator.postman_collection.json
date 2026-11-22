@@ -1,0 +1,328 @@
+{
+  "info": {
+    "name": "Hotel Offer Orchestrator",
+    "description": "Run against the healthy default stack. Failure modes are documented in README.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Delhi offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Correct cheapest offers and preserved supplier commissions', () => { pm.expect(offers).to.have.length(5); pm.expect(offers.find(o => o.name === 'Holtin')).to.deep.equal({ name: 'Holtin', price: 5340, supplier: 'Supplier B', commissionPct: 20 }); pm.expect(offers.find(o => o.name === 'Radison').supplier).to.equal('Supplier A'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Mumbai offers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=mumbai"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Mumbai dataset', () => pm.expect(offers.map(o => o.name)).to.deep.equal(['Sea Pearl', 'Marine Suites', 'Harbour View']));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unknown city",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=atlantis"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Unknown city has no offers', () => pm.expect(offers).to.deep.equal([]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Valid empty city",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=jaipur"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Jaipur has no offers', () => pm.expect(offers).to.deep.equal([]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Both price bounds",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&minPrice=5000&maxPrice=6000"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Inclusive bounded prices', () => { pm.expect(offers.map(o => o.name)).to.deep.equal(['Holtin', 'Radison']); pm.expect(offers.every(o => o.price >= 5000 && o.price <= 6000)).to.equal(true); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Minimum price only",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&minPrice=6000"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Minimum price', () => { pm.expect(offers.map(o => o.name)).to.deep.equal(['The Imperial']); pm.expect(offers.every(o => o.price >= 6000)).to.equal(true); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Maximum price only",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&maxPrice=4500"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Maximum price inclusive', () => { pm.expect(offers.map(o => o.name)).to.deep.equal(['Lotus Residency', 'City Garden']); pm.expect(offers.every(o => o.price <= 4500)).to.equal(true); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Exact inclusive boundary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&minPrice=4500&maxPrice=4500"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Exact boundary', () => pm.expect(offers.map(o => o.name)).to.deep.equal(['City Garden']));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "No matching prices",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&minPrice=1&maxPrice=2"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const offers = pm.response.json();",
+              "pm.test('Successful array response', () => { pm.expect(pm.response.code).to.equal(200); pm.expect(offers).to.be.an('array'); });",
+              "pm.test('Exact offer contract and unique normalized names', () => { const names = offers.map(o => o.name.trim().toLowerCase()); pm.expect(new Set(names).size).to.equal(names.length); offers.forEach(o => { pm.expect(o).to.have.all.keys('name', 'price', 'supplier', 'commissionPct'); pm.expect(o.price).to.be.a('number').and.at.least(0); pm.expect(['Supplier A', 'Supplier B']).to.include(o.supplier); }); });",
+              "pm.test('Empty range result', () => pm.expect(offers).to.deep.equal([]));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Missing city",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Validation error', () => { pm.expect(pm.response.code).to.equal(400); pm.expect(pm.response.json().error.code).to.equal('INVALID_CITY'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reversed price bounds",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&minPrice=6000&maxPrice=5000"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Validation error', () => { pm.expect(pm.response.code).to.equal(400); pm.expect(pm.response.json().error.code).to.equal('INVALID_PRICE_RANGE'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Invalid maximum price",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/api/hotels?city=delhi&maxPrice=oops"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Validation error', () => { pm.expect(pm.response.code).to.equal(400); pm.expect(pm.response.json().error.code).to.equal('INVALID_MAX_PRICE'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supplier A",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/supplierA/hotels?city=delhi"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Independent supplier contract', () => { pm.expect(pm.response.code).to.equal(200); const offers = pm.response.json(); pm.expect(offers).to.be.an('array').and.not.empty; offers.forEach(o => { pm.expect(o).to.have.all.keys('hotelId', 'name', 'price', 'city', 'commissionPct'); pm.expect(o.city).to.equal('delhi'); }); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Supplier B",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/supplierB/hotels?city=delhi"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Independent supplier contract', () => { pm.expect(pm.response.code).to.equal(200); const offers = pm.response.json(); pm.expect(offers).to.be.an('array').and.not.empty; offers.forEach(o => { pm.expect(o).to.have.all.keys('hotelId', 'name', 'price', 'city', 'commissionPct'); pm.expect(o.city).to.equal('delhi'); }); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dependency health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('All dependencies are healthy', () => { pm.expect(pm.response.code).to.equal(200); const body = pm.response.json(); pm.expect(body.status).to.equal('healthy'); pm.expect(body.checks).to.have.all.keys('api', 'supplierA', 'supplierB', 'redis', 'temporal', 'worker'); pm.expect(Object.values(body.checks).every(Boolean)).to.equal(true); });"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
