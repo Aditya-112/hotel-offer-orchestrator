@@ -56,6 +56,7 @@ This audit maps the detailed pasted brief to the implementation. The referenced 
 | Postman deliverable | `postman/hotel-offer-orchestrator.postman_collection.json` | Official v2.1 schema; 15 requests and 33 live assertions pass |
 | README setup, API, failure, cache, deployment, troubleshooting | `README.md` | Reviewed against implemented behavior |
 | CI verification including Docker | `.github/workflows/ci.yml` | [Successful observed run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45038411486) |
+| Requested Docker Hub distribution | `.github/workflows/docker-publish.yml`, `docker-compose.hub.yml` | [Successful publication and fresh pull verification](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45041514869); both public images include AMD64 and ARM64 manifests |
 | Exact PDF compliance and submission conditions | PDF not supplied | Pending receipt of source PDF |
 
 ## Submission checklist
@@ -69,3 +70,4 @@ This audit maps the detailed pasted brief to the implementation. The referenced 
 - [x] Run Docker image builds and the complete Compose stack on a Docker-enabled machine or CI.
 - [ ] Obtain and audit the assessment PDF.
 - [x] Confirm the remote push and observe the GitHub Actions result.
+- [x] Publish both requested Docker Hub images and verify a fresh pulled stack with all collection assertions.

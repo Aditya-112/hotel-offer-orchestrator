@@ -37,8 +37,23 @@ Executed on 22 November 2026. Results below distinguish local runs from the obse
 | Hosted complete Compose startup | Passed; API, worker, Redis and Temporal reached healthy status |
 | Hosted Postman collection against Docker stack | All 15 requests and 33 assertions passed |
 | Hosted verification workflow | Passed for code commit `505339906802cac532dd7581696b26a4c3258660` |
+| Docker Hub publication | Both public images published for Linux AMD64 and ARM64 |
+| Fresh registry-pull verification | All four containers healthy; 15 requests and 33 assertions passed |
 
 The [successful GitHub Actions run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45038411486) reran static checks, all 77 unit/integration tests, Compose validation, image builds, readiness-aware stack startup and the live collection. The initial CI run built the images but encountered a host port conflict with the runner's installed Redis service. CI now maps Redis to host port 16379, while all containers continue using `redis:6379`.
+
+## Docker Hub publication
+
+The [publication and registry-pull verification run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45041514869) completed successfully for source commit `f19f88e3713f4daa4ee57ec9dedc624f480fe13d`. It reran the full verification workflow before publishing both images and then tested a fresh stack using the public registry images with builds disabled.
+
+| Public image | Manifest digest |
+| --- | --- |
+| [aditya40hehe/hotel-offer-orchestrator](https://hub.docker.com/r/aditya40hehe/hotel-offer-orchestrator) | `sha256:2efc3551ca14689973300927a354a5799a9563031a40be7693273799275d554e` |
+| [aditya40hehe/hotel-offer-orchestrator-temporal](https://hub.docker.com/r/aditya40hehe/hotel-offer-orchestrator-temporal) | `sha256:87ae85247e5249126060c19d0b3ca19bcb093989649575fb7aaaea618984f16b` |
+
+Both public registry manifests include `linux/amd64` and `linux/arm64`. Their `latest` and `sha-f19f88e3713f4daa4ee57ec9dedc624f480fe13d` tags were confirmed to resolve to matching digests. The application image is used for both API and worker roles. Redis remains the official `redis:7.4.7-alpine` image.
+
+The `verify-published` job pulled these commit-specific images anonymously, used `docker-compose.hub.yml` with `--no-build`, waited for all four services to become healthy and passed the complete live collection. This runtime verification used Linux AMD64; native ARM64 container execution remains untested. No access tokens are stored in the source repository or Docker build context.
 
 Local reproduction with the ignored test binary:
 

@@ -4,6 +4,7 @@
 
 <p align="center">
   <a href="https://github.com/Aditya-112/hotel-offer-orchestrator/actions/workflows/ci.yml"><img src="https://github.com/Aditya-112/hotel-offer-orchestrator/actions/workflows/ci.yml/badge.svg?branch=codex%2Fhotel-offer-orchestrator" alt="Backend verification" /></a>
+  <a href="https://github.com/Aditya-112/hotel-offer-orchestrator/actions/workflows/docker-publish.yml"><img src="https://github.com/Aditya-112/hotel-offer-orchestrator/actions/workflows/docker-publish.yml/badge.svg" alt="Docker Hub publishing and pull verification" /></a>
   <img src="https://img.shields.io/badge/Node.js-24-43853d?logo=nodedotjs&amp;logoColor=white" alt="Node.js 24" />
   <img src="https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&amp;logoColor=white" alt="Strict TypeScript" />
   <img src="https://img.shields.io/badge/Temporal-1.26-17202c" alt="Temporal SDK 1.26" />
@@ -440,13 +441,15 @@ The shared application image runs either the API or worker, depending on its sta
 
 | Image | Purpose |
 | --- | --- |
-| `aditya40hehe/hotel-offer-orchestrator` | API and Temporal activity worker |
-| `aditya40hehe/hotel-offer-orchestrator-temporal` | Assessment Temporal server with persistent volume directory |
+| [`aditya40hehe/hotel-offer-orchestrator`](https://hub.docker.com/r/aditya40hehe/hotel-offer-orchestrator) | API and Temporal activity worker |
+| [`aditya40hehe/hotel-offer-orchestrator-temporal`](https://hub.docker.com/r/aditya40hehe/hotel-offer-orchestrator-temporal) | Assessment Temporal server with persistent volume directory |
 | `redis:7.4.7-alpine` | City cache and price index |
 
-The manual [`publish-docker` workflow](.github/workflows/docker-publish.yml) runs the complete verification workflow before publication. It builds Linux AMD64 and ARM64 images, publishes `latest` and commit-specific `sha-<full-commit>` tags, then pulls the published images into a new Compose stack and runs the collection again. A configured workflow is not evidence of a completed publication; check the [publish run's result](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/workflows/docker-publish.yml) before using the images.
+The manual [`publish-docker` workflow](.github/workflows/docker-publish.yml) runs the complete verification workflow before publication. It builds Linux AMD64 and ARM64 images, publishes `latest` and commit-specific `sha-<full-commit>` tags, then pulls the published images into a new Compose stack and runs the collection again.
 
-Once the publish run succeeds, run the images without building source:
+**Published and verified:** the [Docker Hub publication run](https://github.com/Aditya-112/hotel-offer-orchestrator/actions/runs/45041514869) passed. Both images are public and support `linux/amd64` and `linux/arm64`. A fresh Linux AMD64 runner pulled the commit-specific images anonymously, brought all four containers to healthy status, and passed 15 HTTP requests with 33 assertions. Native ARM64 container execution was not separately tested.
+
+Run the published images without building source:
 
 ```bash
 docker compose -f docker-compose.hub.yml up --pull always --no-build --wait --wait-timeout 180
